@@ -97,12 +97,36 @@ def chasing_lights(num_groups):
         print(groups)
 
 
+def random_matrix(color):
+    pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS)
+    pixels.fill(BLANK)
+    pixels.show()
+
+    for i in range(len(pixels)):
+        pixels[i] = color
+        pixels.show()
+        time.sleep(0.05)
+
+    time.sleep(1)
+
+    while no_input:
+        i = random.randint(0, LED_COUNT-1)
+        state = random.choice([0, 1])
+
+        if state:
+            pixels[i] = color
+        else:
+            pixels[i] = BLANK
+        pixels.show()
+        time.sleep(0.005)
+
+
 def main():
     global no_input
     
     while True:
         print("\n\nProgram options: ")
-        print("0. Clear Lights\n1. Basic Color\n2. Chasing Lights")
+        print("0. Clear Lights\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix")
         choice = int(input("Enter selection: "))
 
         if choice == 0:
@@ -123,6 +147,25 @@ def main():
             t = threading.Thread(target = signal_user_input)
             t.start()
             chasing_lights(num_groups)
+            no_input = True
+
+        elif choice == 3:
+            color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Define your own\nEnter selection: "))
+            colors = [RED, GREEN, WHITE]
+            color = BLANK
+
+            if color_choice == 4:
+                r = int(input("R: "))
+                g = int(input("G: "))
+                b = int(input("B: "))
+                color = (r, g, b)
+            else:
+                color = colors[color_choice-1]
+
+            # we're just going to wait for user input while other functions do stuff...
+            t = threading.Thread(target = signal_user_input)
+            t.start()
+            random_matrix(color)
             no_input = True
 
 
