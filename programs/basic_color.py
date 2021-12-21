@@ -1,5 +1,5 @@
 # Paul Schakel
-# random_fade.py
+# basic_color.py
 # Simple breathing lights that mimic the color of a basic incandescent bulb while their brightness changes with an overengineered cosine function
 
 import time
@@ -26,26 +26,27 @@ def main():
     decrease = False
     previous_brightness = 0
     
-    breathing_speed = (BREATHING_SPEED_MAX + BREATHING_SPEED_MIN) / 2
+    breathing_speed = (BREATHING_SPEED_MAX + BREATHING_SPEED_MIN) / 2   # set initial speed -- average of max and min
+
     while True:
         pixels.fill((250, 67, 5))
         pixels.show()
 
-        if not increase and previous_brightness < pixels.brightness:    #checks if the first increasing section of curve has begun
+        if not increase and previous_brightness < pixels.brightness:    # checks if the first increasing section of curve has begun
             print("increase begins")
             increase = True
-        elif increase and not decrease and previous_brightness > pixels.brightness:     #checks if decreasing section of curve has begun
+        elif increase and not decrease and previous_brightness > pixels.brightness:     # checks if decreasing section of curve has begun
             print("decrease begins")
             decrease = True
-        elif increase and decrease and previous_brightness < pixels.brightness:     #checks if the curve has started next repetition, and changes the length of the curve if so
-            breathing_speed = (random.random() * BREATHING_SPEED_MAX) + BREATHING_SPEED_MIN     #set new speed (length of curve)
+        elif increase and decrease and previous_brightness < pixels.brightness:     # checks if the curve has started next repetition, and changes the length of the curve if so
+            breathing_speed = (random.random() * BREATHING_SPEED_MAX) + BREATHING_SPEED_MIN     # set new speed (length of curve)
             print("\nCycle ended - new speed is {}\n".format(breathing_speed))
-            cycles = 0   #reset variables for next curve
+            cycles = 0   # reset variables for next curve
             increase = False
             decrease = False
 
         previous_brightness = pixels.brightness
-        pixels.brightness = (-1 * BRIGHTNESS_DIFFERENCE) * math.cos(breathing_speed * cycles) + LED_BRIGHTNESS  #changes brightness as "cycles" goes up - first value is always "LED_BRIGHTNESS"
+        pixels.brightness = (-1 * BRIGHTNESS_DIFFERENCE) * math.cos(breathing_speed * cycles) + LED_BRIGHTNESS  # changes brightness as "cycles" goes up - first value is always "LED_BRIGHTNESS"
         print(pixels.brightness)
         cycles += 1
         time.sleep(0.1)
