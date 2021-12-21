@@ -29,7 +29,7 @@ def main():
     breathing_speed = (BREATHING_SPEED_MAX + BREATHING_SPEED_MIN) / 2   # set initial speed -- average of max and min
 
     while True:
-        pixels.fill((250, 67, 5))
+        pixels.fill((250, 57, 13))
         pixels.show()
 
         if not increase and previous_brightness < pixels.brightness:    # checks if the first increasing section of curve has begun
