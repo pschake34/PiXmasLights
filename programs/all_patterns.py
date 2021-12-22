@@ -23,7 +23,7 @@ WHITE = (250, 57, 13)
 
 no_input = True
 
-pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS)
+pixels = neopixel.NeoPixel(LED_PIN, LED_COUNT, brightness=LED_BRIGHTNESS, auto_write = False)
 pixels.fill(BLANK)
 pixels.show()
 
@@ -52,7 +52,14 @@ def get_color():
         return colors[color_choice-1]
 
 
-def basic_color():
+def get_speed(default):
+    speed = input("Enter speed (Return for default of {}): ".format(default))
+    if speed == "":
+        return default
+    return float(speed)
+
+
+def basic_color(color):
     cycles = 0
     increase = False
     decrease = False
@@ -61,7 +68,7 @@ def basic_color():
     breathing_speed = (BREATHING_SPEED_MAX + BREATHING_SPEED_MIN) / 2   # set initial speed -- average of max and min
 
     while no_input:
-        pixels.fill(WHITE)
+        pixels.fill(color)
         pixels.show()
 
         if not increase and previous_brightness < pixels.brightness:    # checks if the first increasing section of curve has begun
@@ -84,7 +91,7 @@ def basic_color():
         time.sleep(0.1)
 
 
-def chasing_lights(num_groups):
+def chasing_lights(num_groups, speed):
     groups = [[0, 1, 2, 3, 4] for group in range(num_groups)]
     active_groups = [False for group in groups]
     active_groups[0] = True
@@ -110,7 +117,7 @@ def chasing_lights(num_groups):
                 active_groups[i] = True
 
         pixels.show()
-        time.sleep(0.01)
+        time.sleep(speed)
         print(groups)
 
 
@@ -179,6 +186,29 @@ def stars(color, speed):
         to_remove = []
 
 
+def alternating_colors(color1, color2, speed):
+    for i in range(LED_COUNT):
+        if i % 2  == 0:
+            pixels[i] = color1
+        else:
+            pixels[i] = color2
+        pixels.show()
+        time.sleep(0.1)
+
+    while no_input:
+        for i in range(LED_COUNT):
+            if pixels[i] == list(color1):
+                pixels[i] = color2
+            elif pixels[i] == list(color2):
+                pixels[i] = color1
+        
+        for i in range(LED_COUNT-1, -1, -1):
+            pixels.show()
+            time.sleep(0.001)
+
+        time.sleep(speed)
+
+
 def main():
     global no_input
     
@@ -187,45 +217,44 @@ def main():
         pixels.show()
 
         print("\n\nProgram options: ")
-        print("0. Exit\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix\n4. Stars")
+        print("0. Exit\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix\n4. Stars\n5. Alternating Colors")
         choice = int(input("Enter selection: "))
 
         if choice == 0:
             break
 
-        elif choice == 1:
-            # we're just going to wait for user input while other functions do stuff...
-            t = threading.Thread(target = signal_user_input)
-            t.start()
-            basic_color()
-            no_input = True
+        # we're just going to wait for user input while other functions do stuff...
+        t = threading.Thread(target = signal_user_input)
+
+        if choice == 1:
+            color = get_color()
+            basic_color(color)
 
         elif choice == 2:
             num_groups = int(input("Enter the number of groups: "))
-
-            t = threading.Thread(target = signal_user_input)
-            t.start()
-            chasing_lights(num_groups)
-            no_input = True
+            speed = get_speed(0.1)
+            t.start() # have to wait until after user input
+            chasing_lights(num_groups, speed)
 
         elif choice == 3:
             color = get_color()
-
-            t = threading.Thread(target = signal_user_input)
             t.start()
             random_matrix(color)
-            no_input = True
 
         elif choice == 4:
             color = get_color()
-            speed = float(input("Enter speed (0 for default of 0.01): "))
-            if speed == 0:
-                speed = 0.01
-
-            t = threading.Thread(target = signal_user_input)
+            speed = get_speed(0.01)
             t.start()
             stars(color, speed)
-            no_input = True
+
+        elif choice == 5:
+            color1 = get_color()
+            color2 = get_color()
+            speed = get_speed(0.75)
+            t.start()
+            alternating_colors(color1, color2, speed)
+            
+        no_input = True
 
 
 if __name__ == "__main__":
