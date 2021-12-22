@@ -35,6 +35,23 @@ def signal_user_input():
     # thread exits here
 
 
+def fade(color, amount):
+    return tuple([int(value*amount) for value in color])
+
+
+def get_color():
+    color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Define your own\nEnter selection: "))
+    colors = [RED, GREEN, WHITE]
+
+    if color_choice == 4:
+        r = int(input("R: "))
+        g = int(input("G: "))
+        b = int(input("B: "))
+        return (r, g, b)
+    else:
+        return colors[color_choice-1]
+
+
 def basic_color():
     cycles = 0
     increase = False
@@ -44,7 +61,7 @@ def basic_color():
     breathing_speed = (BREATHING_SPEED_MAX + BREATHING_SPEED_MIN) / 2   # set initial speed -- average of max and min
 
     while no_input:
-        pixels.fill((250, 67, 5))
+        pixels.fill(WHITE)
         pixels.show()
 
         if not increase and previous_brightness < pixels.brightness:    # checks if the first increasing section of curve has begun
@@ -121,17 +138,60 @@ def random_matrix(color):
         time.sleep(0.005)
 
 
+def stars(color, speed):
+    num_stars = LED_COUNT / 2
+    stars = {}
+    star_stages = {}
+    to_remove = []
+
+    while no_input:
+        if len(stars) < num_stars and round(random.random()*3) == 2:
+            while True: # makes sure duplicates cant occur
+                new_index = random.randint(0, LED_COUNT-1)
+                if new_index in stars:
+                    print("duplicate")
+                    continue
+                else:
+                    stars[new_index] = 0.1
+                    star_stages[new_index] = False
+                    break
+
+        for index, brightness in stars.items():
+            pixels[index] = fade(color, brightness)
+            if star_stages[index]:
+                stars[index] -= 0.1
+            else:
+                stars[index] += 0.1
+            
+            if round(stars[index], 3) == 0: # had to round because the floats deviate from integers to a certain degree
+                pixels[index] = BLANK
+                to_remove.append(index)
+            elif round(stars[index], 3) == 1:
+                star_stages[index] = True
+
+            time.sleep(speed)
+            pixels.show()
+        
+        for index in to_remove: # takes the item removal out of the main for loop because otherwise the main for loop wont work
+            stars.pop(index)
+            star_stages.pop(index)
+
+        to_remove = []
+
+
 def main():
     global no_input
     
     while True:
+        pixels.fill(BLANK)
+        pixels.show()
+
         print("\n\nProgram options: ")
-        print("0. Clear Lights\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix")
+        print("0. Exit\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix\n4. Stars")
         choice = int(input("Enter selection: "))
 
         if choice == 0:
-            pixels.fill(BLANK)
-            pixels.show()
+            break
 
         elif choice == 1:
             # we're just going to wait for user input while other functions do stuff...
@@ -143,29 +203,28 @@ def main():
         elif choice == 2:
             num_groups = int(input("Enter the number of groups: "))
 
-            # we're just going to wait for user input while other functions do stuff...
             t = threading.Thread(target = signal_user_input)
             t.start()
             chasing_lights(num_groups)
             no_input = True
 
         elif choice == 3:
-            color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Define your own\nEnter selection: "))
-            colors = [RED, GREEN, WHITE]
-            color = BLANK
+            color = get_color()
 
-            if color_choice == 4:
-                r = int(input("R: "))
-                g = int(input("G: "))
-                b = int(input("B: "))
-                color = (r, g, b)
-            else:
-                color = colors[color_choice-1]
-
-            # we're just going to wait for user input while other functions do stuff...
             t = threading.Thread(target = signal_user_input)
             t.start()
             random_matrix(color)
+            no_input = True
+
+        elif choice == 4:
+            color = get_color()
+            speed = float(input("Enter speed (0 for default of 0.01): "))
+            if speed == 0:
+                speed = 0.01
+
+            t = threading.Thread(target = signal_user_input)
+            t.start()
+            stars(color, speed)
             no_input = True
 
 
