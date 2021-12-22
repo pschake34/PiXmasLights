@@ -13,6 +13,7 @@ import neopixel
 LED_COUNT      = 50      # Number of LED pixels.
 LED_PIN        = board.D18      # GPIO pin connected to the pixels (18 uses PWM!).
 LED_BRIGHTNESS = 0.3     # Set to 0 for darkest and 255 for brightest
+MAX_BRIGHTNESS = 0.5
 BRIGHTNESS_DIFFERENCE = 0.1
 BREATHING_SPEED_MAX = 0.4
 BREATHING_SPEED_MIN = 0.01
@@ -20,6 +21,11 @@ BLANK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 WHITE = (250, 57, 13)
+BLUE = (0, 0, 255)
+ORANGE = (250, 40, 0)
+YELLOW = (255, 128, 0)
+PURPLE = (150, 0, 250)
+PINK = (250, 0, 150)
 
 no_input = True
 
@@ -39,9 +45,24 @@ def fade(color, amount):
     return tuple([int(value*amount) for value in color])
 
 
+def fade_strip(speed):
+    x = 0
+    has_begun = False
+    while no_input:
+        pixels.brightness = (MAX_BRIGHTNESS / 2) * -1 * math.cos(0.15 * x) + (MAX_BRIGHTNESS / 2)
+        pixels.show()
+        x += 1
+        time.sleep(speed)
+        print(pixels.brightness)
+        if pixels.brightness > 0 and not has_begun:
+            has_begun = True
+        elif round(pixels.brightness, 2) == 0 and has_begun:
+            break
+
+
 def get_color():
-    color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Define your own\nEnter selection: "))
-    colors = [RED, GREEN, WHITE]
+    color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Blue\n5. Orange\n6. Yellow\n7. Purple\n8. Pink\n9. Define your own\nEnter selection: "))
+    colors = [RED, GREEN, WHITE, BLUE, ORANGE, YELLOW, PURPLE, PINK]
 
     if color_choice == 4:
         r = int(input("R: "))
@@ -118,7 +139,6 @@ def chasing_lights(num_groups, speed):
 
         pixels.show()
         time.sleep(speed)
-        print(groups)
 
 
 def random_matrix(color):
@@ -209,6 +229,17 @@ def alternating_colors(color1, color2, speed):
         time.sleep(speed)
 
 
+def fading_colors(colors, speed, random_order):
+    while no_input:
+        if not random_order:
+            for color in colors:
+                pixels.fill(color)
+                fade_strip(speed)
+        else:
+            pixels.fill(random.choice(colors))
+            fade_strip(speed)
+
+
 def main():
     global no_input
     
@@ -217,7 +248,7 @@ def main():
         pixels.show()
 
         print("\n\nProgram options: ")
-        print("0. Exit\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix\n4. Stars\n5. Alternating Colors")
+        print("0. Exit\n1. Basic Color\n2. Chasing Lights\n3. Random Matrix\n4. Stars\n5. Alternating Colors\n6. Fading Colors")
         choice = int(input("Enter selection: "))
 
         if choice == 0:
@@ -228,6 +259,7 @@ def main():
 
         if choice == 1:
             color = get_color()
+            t.start() # have to wait until after user input
             basic_color(color)
 
         elif choice == 2:
@@ -253,6 +285,23 @@ def main():
             speed = get_speed(0.75)
             t.start()
             alternating_colors(color1, color2, speed)
+
+        elif choice == 6:
+            colors = []
+            num_colors = int(input("Enter the number of colors: "))
+            i = 0
+            while i < num_colors:
+                colors.append(get_color())
+                i += 1
+
+            speed = get_speed(0.25)
+            random_choice = input("Random? Y/n: ").lower()
+            is_random = False
+            if random_choice == "" or random_choice == "y":
+                is_random = True
+
+            t.start()
+            fading_colors(colors, speed, is_random)
             
         no_input = True
 
