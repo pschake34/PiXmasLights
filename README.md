@@ -93,18 +93,12 @@ Apart from some wiring consternation and a fried light string at the beginning o
 
 ### Images
 
-<img src="images/original_lights.jpg" height=300px alt="Original Christmas Lights" style="margin-right: 100px">
-<img src="images/new_lights.jpg" height=300px alt="New Christmas Lights">
-
-<p style="float: left; margin-right: 250px; margin-left: 60px">Original Lights</p> 
-<p>New Lights</p>
-
+| Original Lights | New Lights |
+| --- | --- |
+| <img src="images/original_lights.jpg" width=500px alt="Original Christmas Lights"> | <img src="images/new_lights.jpg" width=500px alt="New Christmas Lights"> |
+  
 <br>
 
-<img src="images/alternating_lights.gif" height=300px alt="Alternating Lights Pattern" style="float: left; margin-right: 50px">
-<img src="images/chasing_lights.gif" height=300px alt="Chasing Lights Pattern" style="float: left; margin-right: 50px">
-<img src="images/random_matrix.gif" height=300px alt="Random Matrix Pattern" style="float: left; margin-right: 50px">
-
-<p style="float: left; margin-right: 65px">Alternating Lights Pattern</p>
-<p style="float:left; margin-right: 74px">Chasing Lights Pattern</p>
-<p style="float:left">Random Matrix Pattern</p>
+| Alternating Lights Pattern | Chasing Lights Pattern | Random Matrix Pattern | 
+| --- | --- | --- |
+| <img src="images/alternating_lights.gif" width=331px alt="Alternating Lights Pattern"> | <img src="images/chasing_lights.gif" width=331px alt="Chasing Lights Pattern"> | <img src="images/random_matrix.gif" width=331px alt="Random Matrix Pattern"> |
