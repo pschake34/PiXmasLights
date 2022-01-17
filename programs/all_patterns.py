@@ -10,9 +10,9 @@ import board
 import neopixel
 
 # LED strip configuration:
-LED_COUNT      = 50      # Number of LED pixels.
+LED_COUNT      = 150      # Number of LED pixels.
 LED_PIN        = board.D18      # GPIO pin connected to the pixels (18 uses PWM!).
-LED_BRIGHTNESS = 0.3     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 0.5   # Set to 0 for darkest and 255 for brightest
 MAX_BRIGHTNESS = 0.5
 BRIGHTNESS_DIFFERENCE = 0.1
 BREATHING_SPEED_MAX = 0.4
@@ -64,7 +64,7 @@ def get_color():
     color_choice = int(input("\n1. Red\n2. Green\n3. White\n4. Blue\n5. Orange\n6. Yellow\n7. Purple\n8. Pink\n9. Define your own\nEnter selection: "))
     colors = [RED, GREEN, WHITE, BLUE, ORANGE, YELLOW, PURPLE, PINK]
 
-    if color_choice == 4:
+    if color_choice == 9:
         r = int(input("R: "))
         g = int(input("G: "))
         b = int(input("B: "))
